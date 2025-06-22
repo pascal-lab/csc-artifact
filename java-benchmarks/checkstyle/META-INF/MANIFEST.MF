@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Implementation-Title: checkstyle
+Implementation-Version: 5.7
+Implementation-Vendor-Id: com.puppycrawl.tools
+Build-Jdk: 1.7.0_45
+Built-By: rivanov
+Specification-Title: checkstyle
+Created-By: Apache Maven
+Specification-Version: 5.7
+Main-Class: com.puppycrawl.tools.checkstyle.Main
+Archiver-Version: Plexus Archiver
+
