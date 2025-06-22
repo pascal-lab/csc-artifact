@@ -14,10 +14,10 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.2")
     // Use Soot as frontend
     implementation(files("lib/sootclasses-modified.jar"))
-    implementation("org.soot-oss:soot:4.3.0-20211223.212205-256")
+    implementation("org.soot-oss:soot:4.3.0")
     // Eliminate SLF4J warning
     implementation("org.slf4j:slf4j-nop:1.7.5")
-
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
     testImplementation("junit:junit:4.13")
 }
 
@@ -39,12 +39,12 @@ task("fatJar", type = Jar::class) {
     )
     from("COPYING", "COPYING.LESSER")
     destinationDirectory.set(rootDir.parentFile)
-//    doLast {
-//        copy {
-//            from(archiveFile)
-//            into(rootProject.projectDir.parentFile)
-//            into(rootProject.buildDir.parentFile)      }
-//    }
+    doLast {
+        copy {
+            from(archiveFile)
+            into(rootProject.buildDir)
+        }
+    }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     with(tasks["jar"] as CopySpec)
 }
