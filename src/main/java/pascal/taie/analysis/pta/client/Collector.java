@@ -78,17 +78,18 @@ abstract class Collector extends ProgramAnalysis<StmtResult<Boolean>> {
                 }
             }
         }
+        //  This is again, stupid
         // log statistics
-        if (Objects.equals(getDescription(), MayFailCast.ID)) {
-            logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m",
-                    "#fail-cast (reachable casts that may fail):", formatter.format(wantedStmts.size())));
-        }
-        else {
-            logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m",
-                    "#poly-call (polymorphic virtual call sites):", formatter.format(wantedStmts.size())));
-        }
-//        logger.info("#{}: found {} in {} reachable relevant Stmts (app)",
-//            getDescription(), nWantedAppStmts, nRelevantAppStmts);
+        // if (Objects.equals(getDescription(), MayFailCast.ID)) {
+        //     logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m",
+        //             "#fail-cast (reachable casts that may fail):", formatter.format(wantedStmts.size())));
+        // }
+        // else {
+        //     logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m",
+        //             "#poly-call (polymorphic virtual call sites):", formatter.format(wantedStmts.size())));
+        // }
+        logger.info("{}: found {} in {} reachable relevant Stmts (app)",
+            getDescription(), nWantedAppStmts, nRelevantAppStmts);
         // convert result to StmtResult
         WantedStmtResult result = new WantedStmtResult(wantedStmts, this::isRelevant);
         if (getOptions().getString("action") != null) {

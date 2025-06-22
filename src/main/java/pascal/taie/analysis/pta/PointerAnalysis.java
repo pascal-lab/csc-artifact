@@ -114,7 +114,8 @@ public class PointerAnalysis extends ProgramAnalysis<PointerAnalysisResult> {
                     selector = Timer.runAndCount(() -> ContextSelectorFactory
                                     .makeSelectiveSelector(cs, Zipper.run(preResult, advanced)),
                             "Zipper", Level.INFO);
-                    dumpMethods("../output/tai-e/" + programID + "-zippere-selected-methods.txt", World.get().getResult("zipper-methods"));
+                    // This is stupid:
+                    // dumpMethods("../output/tai-e/" + programID + "-zippere-selected-methods.txt", World.get().getResult("zipper-methods"));
                     logger.info("Running main analysis of {} ...", advanced);
                 } else if (advanced.equals("mahjong")) {
                     heapModel = Timer.runAndCount(() -> Mahjong.run(preResult, options),
@@ -153,7 +154,8 @@ public class PointerAnalysis extends ProgramAnalysis<PointerAnalysisResult> {
         setPlugin(solver, options, algorithm);
         solver.solve();
         if (algorithm.equals("correlation")) {
-            dumpMethods("../output/tai-e/" + programID + "-csc-involved-methods.txt", ((CutShortcutSolver) solver).getInvolvedMethods());
+            // This is stupid:
+            // dumpMethods("../output/tai-e/" + programID + "-csc-involved-methods.txt", ((CutShortcutSolver) solver).getInvolvedMethods());
         }
         return solver.getResult();
     }

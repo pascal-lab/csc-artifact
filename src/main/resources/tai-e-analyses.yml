@@ -47,6 +47,38 @@
     action: null
     file: null
 
+- description: identify variable pairs that may alias
+  analysisClass: pascal.taie.analysis.pta.client.MayAliasPair
+  id: may-alias-pair
+  requires: [ pta ]
+  options:
+    action: null # dump
+    file: null
+
+- description: find the objects that may escape from one thread to another
+  analysisClass: pascal.taie.analysis.pta.client.ThreadEscapeAnalysis
+  id: thread-escape
+  requires: [ pta ]
+  options:
+    action: null # dump
+    file: null
+
+- description: find the program locations that may allocate thread-shared objects
+  analysisClass: pascal.taie.analysis.pta.client.SharedAllocation
+  id: shared-alloc
+  requires: [ thread-escape ]
+  options:
+    action: null # dump
+    file: null
+
+- description: count the average size of points-to sets for each variable
+  analysisClass: pascal.taie.analysis.pta.client.AvgPts
+  id: avg-pts
+  requires: [ pta ]
+  options:
+    action: null # dump
+    file: null
+
 - description: compare clients between two pta algorithms
   analysisClass: pascal.taie.analysis.pta.client.ClientComparator
   id: comparator

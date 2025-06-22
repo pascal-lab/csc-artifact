@@ -25,6 +25,7 @@ package pascal.taie.analysis.pta.core.heap;
 import pascal.taie.language.classes.JMethod;
 import pascal.taie.language.type.Type;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,6 +40,8 @@ public class MergedObj extends Obj {
 
     private final Type type;
 
+    private final Class<?> model;
+
     /**
      * Set of objects represented by this merged object.
      */
@@ -51,8 +54,13 @@ public class MergedObj extends Obj {
     private Obj representative;
 
     public MergedObj(Type type, String name) {
+        this(type, name, null);
+    }
+
+    public MergedObj(Type type, String name, Class<?> model) {
         this.type = type;
         this.name = name;
+        this.model = model;
     }
 
     public void addRepresentedObj(Obj obj) {
@@ -64,6 +72,11 @@ public class MergedObj extends Obj {
         if (representative == null) {
             representative = obj;
         }
+    }
+
+    @Nullable
+    public Class<?> getModel() {
+        return model;
     }
 
     @Override
@@ -91,13 +104,6 @@ public class MergedObj extends Obj {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder("MergedObj{" + name + "}");
-//        if (!labelSet.isEmpty()) {
-//            result.append(" =>> ");
-//            for(Label l:labelSet){
-//                result.append(l.toString());
-//            }
-//        }
-        return result.toString();
+        return "MergedObj{" + name + "}";
     }
 }

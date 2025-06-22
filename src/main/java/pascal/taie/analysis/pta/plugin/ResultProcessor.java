@@ -135,12 +135,15 @@ public class ResultProcessor implements Plugin {
                 format(aptSizeSens)));
         int reachableInsens = result.getCallGraph().getNumberOfMethods();
         int reachableSens = result.getCSCallGraph().getNumberOfMethods();
-        logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m", "#reach-mtd (reachable methods):",
-                format(reachableInsens)));
+        // logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m", "#reach-mtd (reachable methods):",
+        //        format(reachableInsens)));
+         logger.info("#reach-mtd: {}", format(reachableInsens));
         int callEdgeInsens = (int) result.getCallGraph().edges().count();
         int callEdgeSens = (int) result.getCSCallGraph().edges().count();
-        logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m", "#call-edge (call graph edges):",
-                format(callEdgeInsens)));
+        // This is stupid
+        // logger.info(String.format("\033[33m\033[1m%-60s%s\033[0m", "#call-edge (call graph edges):",
+        //        format(callEdgeInsens)));
+         logger.info("#call graph edges: {}", format(callEdgeInsens));
 //        logger.info("----------------------------------------");
     }
 

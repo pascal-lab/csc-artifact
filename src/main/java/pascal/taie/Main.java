@@ -29,6 +29,7 @@ import pascal.taie.config.AnalysisConfig;
 import pascal.taie.config.AnalysisPlanner;
 import pascal.taie.config.ConfigManager;
 import pascal.taie.config.Configs;
+import pascal.taie.config.LoggerConfigs;
 import pascal.taie.config.Options;
 import pascal.taie.config.PlanConfig;
 import pascal.taie.config.Scope;
@@ -47,6 +48,7 @@ public class Main {
     public static void main(String[] args) {
         Timer.runAndCount(() -> {
             Options options = processArgs(args);
+            LoggerConfigs.setOutput(options.getOutputDir());
             List<AnalysisConfig> plan = processConfigs(options);
             if (plan.isEmpty()) {
                 logger.info("No analyses are specified");
@@ -55,6 +57,7 @@ public class Main {
             buildWorld(options, plan);
             executePlan(plan);
         }, "Tai-e");
+        LoggerConfigs.reconfigure();
     }
 
     /**
