@@ -1,0 +1,13 @@
+.gradle/
+.idea/
+bin/
+build/
+out/
+<<<<<<< HEAD
+pta-output/
+=======
+output/
+
+>>>>>>> 23754b166ce06e2b80d6d6f7d8c6d7e21ba3290d
+# MacOS hidden file
+.DS_Store

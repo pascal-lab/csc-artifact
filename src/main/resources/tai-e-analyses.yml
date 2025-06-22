@@ -1,0 +1,150 @@
+- description: whole-program pointer analysis
+  analysisClass: pascal.taie.analysis.pta.PointerAnalysis
+  id: pta
+  options:
+    cs: ci # | k-[obj|type|call][-k'h]
+    only-app: false # only analyze application code
+    implicit-entries: true # analyze implicit entries
+    merge-string-constants: false
+    merge-string-objects: true
+    merge-string-builders: true
+    merge-exception-objects: true
+    handle-invokedynamic: false
+    program: null
+    algorithm: origin # origin | correlation
+    advanced: null # specify advanced analysis:
+    # zipper | zipper-e | zipper-e=PV
+    # scaler | scaler=TST
+    # mahjong | collection
+    action: null # | dump | compare
+    action-file: null # path of file to dump/compare
+    reflection-log: null # path to reflection log
+    taint-config: null # path to config file of taint analysis,
+    # when this file is given, taint analysis will be enabled
+    plugins: [ ] # | [ pluginClass, ... ]
+
+- description: call graph construction
+  analysisClass: pascal.taie.analysis.graph.callgraph.CallGraphBuilder
+  id: cg
+#  requires: [ pta(algorithm=pta) ]
+  options:
+    algorithm: pta # | cha
+    dump: null # path of file to dump reachable methods and call edges
+    dump-methods: null # path of file to dump reachable methods
+    dump-call-edges: null # path of file to dump to call edges
+
+- description: identify casts that may fail
+  analysisClass: pascal.taie.analysis.pta.client.MayFailCast
+  id: may-fail-cast
+  options:
+    action: null # dump
+    file: null
+
+- description: identify polymorphic callsites
+  analysisClass: pascal.taie.analysis.pta.client.PolymorphicCallSite
+  id: poly-call
+  options:
+    action: null
+    file: null
+
+- description: compare clients between two pta algorithms
+  analysisClass: pascal.taie.analysis.pta.client.ClientComparator
+  id: comparator
+  options:
+    algorithm: may-fail-cast
+
+- description: throw analysis
+  analysisClass: pascal.taie.analysis.exception.ThrowAnalysis
+  id: throw
+  requires: [ pta(algorithm=pta) ] # only required by pta-based analysis
+  options:
+    exception: explicit # | all (includes implicit and explicit exceptions)
+    algorithm: intra # | pta
+
+- description: intraprocedural control-flow graph
+  analysisClass: pascal.taie.analysis.graph.cfg.CFGBuilder
+  id: cfg
+  requires: [ throw(exception=explicit|all) ]
+  options:
+    exception: explicit # | null | all (includes implicit and explicit exceptions)
+    dump: false # dump control-flow graph
+
+- description: interprocedural control-flow graph
+  analysisClass: pascal.taie.analysis.graph.icfg.ICFGBuilder
+  id: icfg
+  requires: [ cfg,cg ]
+  options:
+    dump: false # dump inter-procedural control-flow graph
+
+- description: live variable analysis
+  analysisClass: pascal.taie.analysis.dataflow.analysis.LiveVariable
+  id: livevar
+  requires: [ cfg ]
+  options:
+    strongly: true # enable strongly live variable analysis
+
+- description: available expression analysis
+  analysisClass: pascal.taie.analysis.dataflow.analysis.availexp.AvailableExpression
+  id: availexp
+  requires: [ cfg ]
+
+- description: reaching definition analysis
+  analysisClass: pascal.taie.analysis.dataflow.analysis.ReachingDefinition
+  id: reachdef
+  requires: [ cfg ]
+
+- description: constant propagation
+  analysisClass: pascal.taie.analysis.dataflow.analysis.constprop.ConstantPropagation
+  id: constprop
+  requires: [ cfg ]
+  options:
+    edge-refine: true # refine lattice value via edge transfer
+
+- description: inter-procedural constant propagation
+  analysisClass: pascal.taie.analysis.dataflow.inter.InterConstantPropagation
+  id: inter-constprop
+  requires: [ icfg, pta(alias-aware=true) ]
+  options:
+    edge-refine: true # refine lattice value via edge transfer
+    alias-aware: false # leverage alias information to improve precision
+
+- description: dead code detection
+  analysisClass: pascal.taie.analysis.dataflow.analysis.DeadCodeDetection
+  id: deadcode
+  requires: [ cfg,constprop,livevar ]
+
+- description: process results of previously-run analyses
+  analysisClass: pascal.taie.analysis.misc.ResultProcessor
+  id: process-result
+  options:
+    analyses: [ ] # IDs of analyses whose results are to be processed
+    only-app: true # only process results of application code
+    action: dump # | compare
+    action-file: null # path of file to dump/compare
+    log-mismatches: false # | whether log mismatched items
+
+- description: dump classes and Tai-e IR
+  analysisClass: pascal.taie.analysis.misc.ClassDumper
+  id: class-dumper
+  options:
+    dump-dir: null # path of directory to dump classes;
+    # if this is not given (i.e., null), classes will be
+    # dumped to Tai-e's default output directory
+
+- description: null value analysis
+  analysisClass: pascal.taie.analysis.bugfinder.dataflow.IsNullAnalysis
+  id: isnull
+  requires: [ throw,cfg ]
+
+- description: Null pointer and redundant comparison detector
+  analysisClass: pascal.taie.analysis.bugfinder.nullpointer.NullPointerDetection
+  id: null-pointer
+  requires: [ isnull ]
+
+- description: find clone() related problems
+  analysisClass: pascal.taie.analysis.bugfinder.CloneIdiom
+  id: clone-idiom
+
+- description: find the method that may drop or ignore exceptions
+  analysisClass: pascal.taie.analysis.bugfinder.DroppedException
+  id: dropped-exception
